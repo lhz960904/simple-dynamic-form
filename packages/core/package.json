@@ -1,0 +1,12 @@
+{
+  "name": "@jsonforrm/core",
+  "version": "0.0.1",
+  "description": "react dynamic form by jsonschema",
+  "main": "index.js",
+  "author": "lihaoze.cq@gmail.com",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "react": "^17.0.1"
+  }
+}
