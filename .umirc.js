@@ -1,5 +1,6 @@
 import { defineConfig } from 'dumi';
 import path from 'path';
+import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 
 export default defineConfig({
   title: 'JSON Form',
@@ -30,6 +31,13 @@ export default defineConfig({
   ],
   alias: {
     '@jsonform/core': path.resolve(__dirname, 'packages/core'),
+  },
+  chainWebpack(webpack) {
+    webpack
+      .plugin('monaco')
+      .use(MonacoWebpackPlugin, [{ languages: ['json'] }]);
+
+    return webpack;
   },
   // more config: https://d.umijs.org/config
 });

@@ -1,10 +1,15 @@
 .page-playground {
   height: calc(100vh - 64px);
-  padding: 24px;
+  padding: 24px 10px 0;
   box-sizing: border-box;
+  flex-direction: column;
 
   .playground-content {
-    height: calc(100% - 26px);
+    height: 100%;
+
+    .ant-col {
+      flex: 1;
+    }
   }
 
   .ant-divider-horizontal {
@@ -13,5 +18,20 @@
 
   .ant-divider-vertical {
     height: 100%;
+    margin: 0;
+  }
+}
+
+.playground-editor-item {
+  border: 1px solid #d9d9d9;
+  border-radius: 3px;
+  .playground-editor-header {
+    padding: 8px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    background-color: #fafafa;
+    border-bottom: 1px solid #d9d9d9;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
   }
 }

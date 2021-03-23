@@ -1,4 +1,5 @@
 ---
+title: Playground
 sidemenu: false
 gapless: true
 ---
