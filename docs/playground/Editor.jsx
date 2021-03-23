@@ -10,23 +10,7 @@ const options = {
   scrollbar: {
     verticalScrollbarSize: 5,
   },
-};
-
-// 转换成json string
-const stringify = v => {
-  try {
-    return JSON.stringify(v, null, 2);
-  } catch (error) {
-    return {};
-  }
-};
-
-const parse = s => {
-  try {
-    return JSON.parse(s);
-  } catch (error) {
-    return undefined;
-  }
+  automaticLayout: true,
 };
 
 function EditorItem(props) {
@@ -36,7 +20,7 @@ function EditorItem(props) {
     <div className="playground-editor-item" style={style}>
       <header className="playground-editor-header">{title}</header>
       <MonacoEditor
-        value={value}
+        value={value || '{}'}
         onChange={onChange}
         width={width}
         height={height}
@@ -51,30 +35,23 @@ function EditorItem(props) {
 export default function Editor({ values = {}, onChange }) {
   // 获取code改变
   const getCodeChange = key => value => {
-    console.log(key, value);
     onChange({
       ...values,
-      [key]: parse(value),
+      [key]: value,
     });
   };
 
-  const schemaCode = stringify(values.schema);
   const schemaChange = getCodeChange('schema');
-
-  const uiSchemaCode = stringify(values.uiSchema);
   const uiSchemaChange = getCodeChange('uiSchema');
-
-  const formDataCode = stringify(values.formData);
   const formDataChange = getCodeChange('formData');
 
-  console.log(values);
   return (
     <div>
       <EditorItem
         width="100%"
         height={300}
         title="schema"
-        value={schemaCode}
+        value={values.schema}
         onChange={schemaChange}
       />
       <Row type="flex" style={{ marginTop: 8 }} gutter={8}>
@@ -83,7 +60,7 @@ export default function Editor({ values = {}, onChange }) {
             width="100%"
             height={250}
             title="uiSchema"
-            value={uiSchemaCode}
+            value={values.uiSchema}
             onChange={uiSchemaChange}
           />
         </Col>
@@ -92,7 +69,7 @@ export default function Editor({ values = {}, onChange }) {
             width="100%"
             height={250}
             title="formData"
-            value={formDataCode}
+            value={values.formData}
             onChange={formDataChange}
           />
         </Col>

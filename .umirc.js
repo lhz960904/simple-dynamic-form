@@ -5,7 +5,6 @@ import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 export default defineConfig({
   title: 'JSON Form',
   mode: 'site',
-  logo: false,
   locales: [['zh-CN', '中文']],
   navs: [
     {

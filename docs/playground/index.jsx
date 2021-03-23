@@ -10,20 +10,44 @@ import './style.less';
 
 const sampleItems = [basic];
 
+function stringify(obj) {
+  return ['schema', 'uiSchema', 'formData'].reduce((ret, k) => {
+    try {
+      return {
+        ...ret,
+        [k]: JSON.stringify(obj[k] || {}, null, 2),
+      };
+    } catch (error) {
+      console.warn(`[Stringify Error]`, obj[k]);
+      return { ...ret, [k]: '{}' };
+    }
+  }, {});
+}
+
+function parse(obj) {
+  return Object.keys(obj).reduce((ret, k) => {
+    try {
+      return {
+        ...ret,
+        [k]: JSON.parse(obj[k]),
+      };
+    } catch (error) {
+      console.warn(`[Parse Error]`, obj[k]);
+      return ret;
+    }
+  }, {});
+}
+
 export default function Playground() {
   const [sampleKey, setSampleKey] = useState();
 
-  const [values, setValues] = useState({
-    schema: {},
-    uiSchema: {},
-    formData: {},
-  });
+  const [values, setValues] = useState({});
 
   // 默认第一个示例
   useEffect(() => {
     if (sampleItems.length) {
       setSampleKey(sampleItems[0].key);
-      setValues(sampleItems[0]);
+      setValues(stringify(sampleItems[0]));
     }
   }, []);
 
@@ -32,31 +56,31 @@ export default function Playground() {
     setSampleKey(k);
     const current = sampleItems.find(i => i.key === value);
     if (current) {
-      setValues(current);
+      setValues(stringify(current));
     }
   }
 
   return (
-    <Row className="page-playground" type="flex">
-      <Col>
+    <div className="page-playground">
+      <div>
         <Header
           sampleKey={sampleKey}
           onSampleChange={handleSampleChange}
           sampleItems={sampleItems}
         />
         <Divider />
-      </Col>
-      <Col style={{ flex: '1' }}>
-        <Row className="playground-content">
-          <Col style={{ padding: 8 }}>
-            <Editor values={values} onChange={() => {}} />
+      </div>
+      <div>
+        <Row className="playground-content" type="flex">
+          <Col style={{ padding: 8, flex: 1 }}>
+            <Editor values={values} onChange={v => setValues(v)} />
           </Col>
           <Divider type="vertical" />
-          <Col style={{ padding: 8 }}>
-            <Preview />
+          <Col style={{ padding: 8, flex: 1 }}>
+            <Preview values={parse(values)} />
           </Col>
         </Row>
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 }
