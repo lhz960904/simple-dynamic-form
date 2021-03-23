@@ -12,7 +12,9 @@
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "lint-staged": {
     "*.{js,jsx,less,md,json}": [
       "prettier --write"
@@ -22,6 +24,7 @@
     ]
   },
   "devDependencies": {
+    "antd": "^4.14.1",
     "dumi": "^1.1.7",
     "lerna": "^3.22.1",
     "lint-staged": "^10.0.7",
