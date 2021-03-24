@@ -31,6 +31,8 @@ export default defineConfig({
   alias: {
     '@jsonform/core': path.resolve(__dirname, 'packages/core'),
   },
+  base: '/dynamic-form-website/',
+  publicPath: '/dynamic-form-website/',
   chainWebpack(webpack) {
     webpack
       .plugin('monaco')

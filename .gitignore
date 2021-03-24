@@ -7,7 +7,7 @@
 /yarn-error.log
 /yarn.lock
 /package-lock.json
-
+dist
 
 # misc
 .DS_Store
