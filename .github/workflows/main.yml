@@ -1,4 +1,4 @@
-name: CI
+name: Deploy Docs
 
 on:
   push:
@@ -12,13 +12,15 @@ jobs:
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-      - name: Create local changes
+      - name: Build Docs
         run: |
-          npm install
-          npm run build
-      - name: Commit files
+          yarn
+          yarn build
+      - name: Push Resources
         run: |
+          cd dist
           git config --local user.email "lihaoze.cq@gmail.com"
           git config --local user.name "lhz960904"
+          git init
           git commit -m "deploy docs" -a
           git push -f https://github.com/super-wall/dynamic-form-website.git master
