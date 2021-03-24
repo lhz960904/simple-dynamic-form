@@ -4,6 +4,8 @@ import { getDefaultRegistry } from './utils';
 export default function JsonForm(props) {
   console.log('receive props', props);
 
+  const { schema, uiSchema, formData, onChange } = props;
+
   // 合并后的注册表
   const registry = useMemo(() => {
     const { fields, widgets, templates } = getDefaultRegistry();
@@ -14,13 +16,26 @@ export default function JsonForm(props) {
     };
   }, [props.fields, props.widgets, props.widgets]);
 
+  // 表单值有变动
+  const handleChange = formData => {
+    if (typeof onChange === 'function') {
+      onChange(formData);
+    }
+  };
+
   const {
     fields: { SchemaField },
   } = registry;
 
   return (
     <form>
-      <SchemaField />
+      <SchemaField
+        registry={registry}
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={formData}
+        onChange={handleChange}
+      />
     </form>
   );
 }

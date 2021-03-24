@@ -4,11 +4,12 @@ import Editor from './Editor';
 import Preview from './Preview';
 import { Row, Col, Divider } from 'antd';
 import basic from './samples/basic';
+import single from './samples/single';
 
 import 'antd/dist/antd.css';
 import './style.less';
 
-const sampleItems = [basic];
+const sampleItems = [single, basic];
 
 function stringify(obj) {
   return ['schema', 'uiSchema', 'formData'].reduce((ret, k) => {
@@ -54,10 +55,18 @@ export default function Playground() {
   // 示例切换
   function handleSampleChange(k) {
     setSampleKey(k);
-    const current = sampleItems.find(i => i.key === value);
+    const current = sampleItems.find(i => i.key === k);
     if (current) {
       setValues(stringify(current));
     }
+  }
+
+  // 表单值有变化，同步到Editor
+  function handleFormDataChange(formData) {
+    setValues({
+      ...values,
+      formData: JSON.stringify(formData, null, 2),
+    });
   }
 
   return (
@@ -75,9 +84,11 @@ export default function Playground() {
           <Col style={{ padding: 8, flex: 1 }}>
             <Editor values={values} onChange={v => setValues(v)} />
           </Col>
-          <Divider type="vertical" />
           <Col style={{ padding: 8, flex: 1 }}>
-            <Preview values={parse(values)} />
+            <Preview
+              values={parse(values)}
+              onFormDataChange={handleFormDataChange}
+            />
           </Col>
         </Row>
       </div>

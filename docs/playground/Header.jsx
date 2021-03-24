@@ -8,7 +8,10 @@ export default function Header({
 }) {
   return (
     <div>
-      <Radio.Group value={sampleKey} onChange={onSampleChange}>
+      <Radio.Group
+        value={sampleKey}
+        onChange={e => onSampleChange(e.target.value)}
+      >
         {sampleItems.map(item => (
           <Radio value={item.key} key={item.key}>
             {item.name}
