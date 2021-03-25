@@ -24,4 +24,4 @@ jobs:
           git init
           git add .
           git commit -m "deploy docs"
-          git push -f https://github.com/super-wall/dynamic-form-website.git master
+          git push -f git@github.com:super-wall/dynamic-form-website.git master
