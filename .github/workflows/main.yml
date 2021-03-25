@@ -22,5 +22,6 @@ jobs:
           git config --global user.email "lihaoze.cq@gmail.com"
           git config --global user.name "lhz960904"
           git init
-          git commit -m "deploy docs" -a
+          git add .
+          git commit -m "deploy docs"
           git push -f https://github.com/super-wall/dynamic-form-website.git master
