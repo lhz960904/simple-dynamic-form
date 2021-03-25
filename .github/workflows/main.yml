@@ -17,11 +17,11 @@ jobs:
           yarn
           yarn build
       - name: Push Resources
-        run: |
-          cd dist
-          git config --global user.email "lihaoze.cq@gmail.com"
-          git config --global user.name "lhz960904"
-          git init
-          git add .
-          git commit -m "deploy docs"
-          git push -f git@github.com:super-wall/dynamic-form-website.git master
+        uses: cpina/github-action-push-to-another-repository@master
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'dist'
+          destination-github-username: 'super-wall'
+          destination-repository-name: 'dynamic-form-website'
+          user-email: lihaozecq@gmail.com
