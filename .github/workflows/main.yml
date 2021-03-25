@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -19,8 +19,8 @@ jobs:
       - name: Push Resources
         run: |
           cd dist
-          git config --local user.email "lihaoze.cq@gmail.com"
-          git config --local user.name "lhz960904"
+          git config --global user.email "lihaoze.cq@gmail.com"
+          git config --global user.name "lhz960904"
           git init
           git commit -m "deploy docs" -a
           git push -f https://github.com/super-wall/dynamic-form-website.git master
