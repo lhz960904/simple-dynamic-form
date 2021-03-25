@@ -33,6 +33,7 @@ export default defineConfig({
   },
   base: '/dynamic-form-website/',
   publicPath: '/dynamic-form-website/',
+  extraBabelIncludes: ['react-monaco-editor'],
   chainWebpack(webpack) {
     webpack
       .plugin('monaco')
