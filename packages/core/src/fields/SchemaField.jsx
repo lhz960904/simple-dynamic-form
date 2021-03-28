@@ -1,5 +1,6 @@
 import React from 'react';
 import { getSchemaType, getWidget } from '../utils';
+import get from 'lodash/get';
 
 export default function SchemaField(props) {
   const { schema, uiSchema, formData, registry, onChange } = props;
@@ -35,9 +36,9 @@ export default function SchemaField(props) {
       <SchemaField
         key={name}
         registry={registry}
-        schema={schema.properties[name]}
-        uiSchema={uiSchema[name]}
-        formData={formData[name]}
+        schema={get(schema, `properties.${name}`)}
+        uiSchema={get(uiSchema, `${name}`)}
+        formData={get(formData, `${name}`)}
         onChange={onPropertyChange(name)}
       />
     );

@@ -17,7 +17,7 @@ export default {
     },
   },
   formData: {
-    string: '',
+    string: '哈哈哈',
     select: 'a',
   },
 };

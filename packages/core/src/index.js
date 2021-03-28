@@ -1,10 +1,18 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { getDefaultRegistry } from './utils';
+import useControllableValue from './hooks/useControllableValue';
 
 export default function JsonForm(props) {
   console.log('receive props', props);
 
-  const { schema, uiSchema, formData, onChange } = props;
+  const [formData, setFormData] = useControllableValue(props, {
+    valuePropName: 'formData',
+    trigger: 'onChange',
+  });
+
+  const { schema, uiSchema } = props;
+
+  // todo 非受控时，schema有改变，formData需要重置下
 
   // 合并后的注册表
   const registry = useMemo(() => {
@@ -17,15 +25,13 @@ export default function JsonForm(props) {
   }, [props.fields, props.widgets, props.widgets]);
 
   // 表单值有变动
-  const handleChange = formData => {
-    if (typeof onChange === 'function') {
-      onChange(formData);
-    }
-  };
+  const handleChange = formData => setFormData(formData);
 
   const {
     fields: { SchemaField },
   } = registry;
+
+  console.log('formData', formData);
 
   return (
     <form>
