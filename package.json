@@ -30,6 +30,7 @@
     "yorkie": "^2.0.0"
   },
   "dependencies": {
+    "ahooks": "^2.10.0",
     "antd": "^4.14.0",
     "dumi": "^1.1.7",
     "lodash": "^4.17.21",

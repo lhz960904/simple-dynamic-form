@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useRef } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { Row, Col } from 'antd';
+import { useSize } from 'ahooks';
 
 // MonacoEditor 参数
 const options = {
@@ -33,6 +34,13 @@ function EditorItem(props) {
 }
 
 export default function Editor({ values = {}, onChange }) {
+  const ref = useRef();
+  const size = useSize(ref);
+
+  console.log('size', size);
+
+  const halfHeight = size.height / 2.5;
+
   // 获取code改变
   const getCodeChange = key => value => {
     onChange({
@@ -46,10 +54,10 @@ export default function Editor({ values = {}, onChange }) {
   const formDataChange = getCodeChange('formData');
 
   return (
-    <div>
+    <div style={{ height: '100%' }} ref={ref}>
       <EditorItem
         width="100%"
-        height={300}
+        height={size.height / 2}
         title="schema"
         value={values.schema}
         onChange={schemaChange}
@@ -58,7 +66,7 @@ export default function Editor({ values = {}, onChange }) {
         <Col span={12}>
           <EditorItem
             width="100%"
-            height={250}
+            height={size.height / 3}
             title="uiSchema"
             value={values.uiSchema}
             onChange={uiSchemaChange}
@@ -67,7 +75,7 @@ export default function Editor({ values = {}, onChange }) {
         <Col span={12}>
           <EditorItem
             width="100%"
-            height={250}
+            height={size.height / 3}
             title="formData"
             value={values.formData}
             onChange={formDataChange}

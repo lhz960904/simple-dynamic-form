@@ -79,7 +79,7 @@ export default function Playground() {
         />
         <Divider />
       </div>
-      <div>
+      <div style={{ height: 'calc(100% - 50px)' }}>
         <Row className="playground-content" type="flex">
           <Col style={{ padding: 8, flex: 1 }}>
             <Editor values={values} onChange={v => setValues(v)} />
