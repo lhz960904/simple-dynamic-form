@@ -37,10 +37,6 @@ export default function Editor({ values = {}, onChange }) {
   const ref = useRef();
   const size = useSize(ref);
 
-  console.log('size', size);
-
-  const halfHeight = size.height / 2.5;
-
   // 获取code改变
   const getCodeChange = key => value => {
     onChange({
@@ -57,7 +53,7 @@ export default function Editor({ values = {}, onChange }) {
     <div style={{ height: '100%' }} ref={ref}>
       <EditorItem
         width="100%"
-        height={size.height / 2}
+        height={(size.height || 600) / 2}
         title="schema"
         value={values.schema}
         onChange={schemaChange}
@@ -66,7 +62,7 @@ export default function Editor({ values = {}, onChange }) {
         <Col span={12}>
           <EditorItem
             width="100%"
-            height={size.height / 3}
+            height={(size.height || 750) / 3}
             title="uiSchema"
             value={values.uiSchema}
             onChange={uiSchemaChange}
@@ -75,7 +71,7 @@ export default function Editor({ values = {}, onChange }) {
         <Col span={12}>
           <EditorItem
             width="100%"
-            height={size.height / 3}
+            height={(size.height || 750) / 3}
             title="formData"
             value={values.formData}
             onChange={formDataChange}
