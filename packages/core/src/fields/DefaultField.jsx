@@ -1,5 +1,6 @@
 import React from 'react';
 import { getWidget } from '../utils';
+import get from 'lodash/get';
 
 export default function DefaultField(props) {
   const {
@@ -27,6 +28,8 @@ export default function DefaultField(props) {
     registry,
   };
 
+  const options = get(schema, 'ui:options', {});
+
   return (
     <Template {...templateProps}>
       <Widget
@@ -35,6 +38,7 @@ export default function DefaultField(props) {
         value={formData}
         errorSchema={errorSchema}
         onChange={onChange}
+        options={options}
       />
     </Template>
   );

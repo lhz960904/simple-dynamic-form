@@ -18,25 +18,11 @@ export default {
         enum: ['a', 'b', 'c'],
         enumNames: ['选项1', '选项2', '选项3'],
       },
-      children: {
-        type: 'object',
-        properties: {
-          string: {
-            title: '字符串',
-            description: '描述1',
-            type: 'string',
-          },
-        },
-      },
     },
   },
   formData: {
     string: '字符串',
     select: 'a',
   },
-  uiSchema: {
-    select: {
-      'ui:widget': 'SelectWidget',
-    },
-  },
+  uiSchema: {},
 };

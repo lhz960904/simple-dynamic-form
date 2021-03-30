@@ -28,50 +28,40 @@ export default function SelectWidget({
   uiSchema,
   disabled,
   options,
+  multiple,
 }) {
   // 构建optionList
   const enumValues = get(schema, 'enum', []);
   const enumNames = get(schema, 'enumNames', []);
   const optionList = enumValues.map((v, i) => ({
     label: enumNames[i] || v,
-    value: v,
+    value: String(v),
   }));
 
-  // multiple判断 array + enum
-  const { type, items } = schema;
-  const multiple = type === 'array' && items && enumValues.length;
+  const currentValue = toArray(value);
 
   const handleChange = e => {
-    let newValue;
-    // 多选是数组
-    if (multiple) {
-      newValue = [...e.target.options]
-        .filter(o => o.selected)
-        .map(o => o.value);
-    } else {
-      newValue = e.target.value;
-    }
-
-    newValue = parseValue(newValue, schema);
-
-    console.log('anewValue', newValue);
-
+    const newValue = parseValue(e.target.value, schema);
     onChange(newValue);
   };
 
   return (
-    <select
-      {...options}
-      multiple={multiple}
-      disabled={disabled}
-      value={multiple ? toArray(value) : value}
-      onChange={handleChange}
-    >
-      {optionList.map(({ label, value }) => (
-        <option key={value} value={value}>
-          {label}
-        </option>
-      ))}
-    </select>
+    <div>
+      {optionList.map(option => {
+        return (
+          <span style={{ marginRight: 10 }} key={option.value}>
+            <input
+              type="radio"
+              value={option.value}
+              id={option.value}
+              disabled={disabled}
+              checked={String(value) === option.value}
+              onChange={handleChange}
+            />
+            <label htmlFor={option.value}>{option.label}</label>
+          </span>
+        );
+      })}
+    </div>
   );
 }

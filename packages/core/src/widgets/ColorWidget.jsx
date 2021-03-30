@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CheckboxWidget({
+export default function ColorWidget({
   value,
   onChange,
   schema,
@@ -11,10 +11,10 @@ export default function CheckboxWidget({
   return (
     <input
       {...options}
-      type="checkbox"
+      type="color"
       disabled={disabled}
       value={value || ''}
-      onChange={e => onChange(e.target.checked)}
+      onChange={e => onChange(e.target.value)}
     />
   );
 }

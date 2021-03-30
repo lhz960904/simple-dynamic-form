@@ -28,6 +28,7 @@ export default function SelectWidget({
   uiSchema,
   disabled,
   options,
+  multiple,
 }) {
   // 构建optionList
   const enumValues = get(schema, 'enum', []);
@@ -37,41 +38,40 @@ export default function SelectWidget({
     value: v,
   }));
 
-  // multiple判断 array + enum
-  const { type, items } = schema;
-  const multiple = type === 'array' && items && enumValues.length;
+  const currentValue = toArray(value);
 
   const handleChange = e => {
-    let newValue;
-    // 多选是数组
-    if (multiple) {
-      newValue = [...e.target.options]
-        .filter(o => o.selected)
-        .map(o => o.value);
+    let newValue = [];
+    if (e.target.checked) {
+      newValue = [...currentValue, e.target.value];
     } else {
-      newValue = e.target.value;
+      newValue = currentValue.filter(v => v !== e.target.value);
     }
 
     newValue = parseValue(newValue, schema);
-
-    console.log('anewValue', newValue);
 
     onChange(newValue);
   };
 
   return (
-    <select
-      {...options}
-      multiple={multiple}
-      disabled={disabled}
-      value={multiple ? toArray(value) : value}
-      onChange={handleChange}
-    >
-      {optionList.map(({ label, value }) => (
-        <option key={value} value={value}>
-          {label}
-        </option>
-      ))}
-    </select>
+    <div>
+      {optionList.map(({ label, value }, idx) => {
+        const checked = currentValue.indexOf(value) !== -1;
+
+        return (
+          <span style={{ marginRight: 10 }} key={value}>
+            <input
+              type="checkbox"
+              value={value}
+              id={value}
+              disabled={disabled}
+              checked={checked}
+              onChange={handleChange}
+            />
+            <label htmlFor={value}>{label}</label>
+          </span>
+        );
+      })}
+    </div>
   );
 }

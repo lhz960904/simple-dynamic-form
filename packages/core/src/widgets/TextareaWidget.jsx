@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CheckboxWidget({
+export default function TextareaWidget({
   value,
   onChange,
   schema,
@@ -9,12 +9,11 @@ export default function CheckboxWidget({
   options,
 }) {
   return (
-    <input
+    <textarea
       {...options}
-      type="checkbox"
       disabled={disabled}
       value={value || ''}
-      onChange={e => onChange(e.target.checked)}
+      onChange={e => onChange(e.target.value)}
     />
   );
 }

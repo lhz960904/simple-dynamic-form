@@ -4,12 +4,12 @@ import templates from './templates';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 
-const COMPONENT_TYPES = {
+const DEFULAT_TYPE_TO_FIELD = {
   array: 'ArrayField',
   object: 'ObjectField',
 };
 
-const widgetMap = {
+const DEFAULT_TYPE_TO_WIDGET = {
   boolean: 'CheckboxWidget',
   string: 'TextWidget',
   number: 'TextWidget',
@@ -85,18 +85,27 @@ export function combineSchema(schema = {}, uiSchema = {}) {
  */
 export function getWidget(schema = {}, widgets) {
   const type = getSchemaType(schema);
-  if (!type) {
-    return () => null;
-  }
   const { 'ui:widget': widgetKey } = schema;
-  // 优先用uiSchema定义的widet
-  const Widget = widgets[widgetKey] || widgets[widgetMap[type]];
-
-  if (typeof Widget === 'function') {
+  // 优先使用ui:widget
+  let Widget;
+  if (widgetKey) {
+    Widget = widgets[widgetKey] || (() => `No widget: ${widgetKey}`);
     return Widget;
   }
 
-  return () => null;
+  // enum、enumNames 下拉框
+  if (Array.isArray(schema.enum)) {
+    Widget = widgets.SelectWidget;
+  }
+
+  // 尝试通过type拿到默认类型
+  if (!Widget) {
+    Widget =
+      widgets[DEFAULT_TYPE_TO_WIDGET[type]] ||
+      (() => `No widget for type ${type}`);
+  }
+
+  return Widget;
 }
 
 /**
@@ -110,7 +119,7 @@ export function getFieldComponent(schema, fields) {
   if (typeof field === 'string' && field in fields) {
     return fields[field];
   }
-  const componentName = COMPONENT_TYPES[getSchemaType(schema)];
+  const componentName = DEFULAT_TYPE_TO_FIELD[getSchemaType(schema)];
 
   return fields[componentName] || fields.DefaultField;
 }
