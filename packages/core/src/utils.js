@@ -1,6 +1,13 @@
 import fields from './fields';
 import widgets from './widgets';
 import templates from './templates';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+
+const COMPONENT_TYPES = {
+  array: 'ArrayField',
+  object: 'ObjectField',
+};
 
 const widgetMap = {
   boolean: 'CheckboxWidget',
@@ -30,14 +37,58 @@ export function getSchemaType(schema = {}) {
 }
 
 /**
- * 根据schema、uiSchema、fields、获取对应Widget
+ * 合并Schema、uiSchema，俩者逻辑关联性大，简化内部处理
+ * 理论上，直接舍弃uiSchema也可以
  */
-export function getWidget(schema = {}, uiSchema = {}, widgets) {
+export function combineSchema(schema = {}, uiSchema = {}) {
+  const properties = get(schema, 'properties', {});
+
+  if (isEmpty(properties)) {
+    return schema;
+  }
+
+  const newProperties = Object.entries(properties).reduce(
+    (ret, [key, schema]) => {
+      const { type, enum: options, properties: children, items } = schema;
+
+      const isObj = type === 'object' && children;
+      // enum + array 代表的多选框，没有sub
+      const isArr = type === 'array' && items && !options;
+
+      const ui = key && uiSchema[key];
+      if (!ui) {
+        return { ...ret, [key]: schema };
+      }
+
+      // 如果是list，递归合并items
+      if (isArr) {
+        const newItems = combineSchema(items, ui.items || {});
+        return { ...ret, [key]: { ...schema, ...ui, items: newItems } };
+      }
+
+      // object递归合并整个schema
+      if (isObj) {
+        const newSchema = combineSchema(schema, ui);
+        return { ...ret, [key]: { ...newSchema } };
+      }
+
+      return { ...ret, [key]: { ...schema, ...ui } };
+    },
+    {},
+  );
+
+  return { ...schema, properties: newProperties };
+}
+
+/**
+ * 根据schema、fields、获取对应Widget
+ */
+export function getWidget(schema = {}, widgets) {
   const type = getSchemaType(schema);
   if (!type) {
     return () => null;
   }
-  const { 'ui:widget': widgetKey } = uiSchema;
+  const { 'ui:widget': widgetKey } = schema;
   // 优先用uiSchema定义的widet
   const Widget = widgets[widgetKey] || widgets[widgetMap[type]];
 
@@ -49,6 +100,21 @@ export function getWidget(schema = {}, uiSchema = {}, widgets) {
 }
 
 /**
- * 根据schema、uiSchema、fields、获取对应Field
+ * 根据schema、fields、获取对应Field
  */
-export function getFieldComponent(schema, uiSchema, fields) {}
+export function getFieldComponent(schema, fields) {
+  const field = schema['ui:field'];
+  if (typeof field === 'function') {
+    return field;
+  }
+  if (typeof field === 'string' && field in fields) {
+    return fields[field];
+  }
+  const componentName = COMPONENT_TYPES[getSchemaType(schema)];
+
+  return fields[componentName] || fields.DefaultField;
+}
+
+export function validate(schema, formData) {
+  // const checkt
+}

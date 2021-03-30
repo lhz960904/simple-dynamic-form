@@ -1,46 +1,30 @@
 import React from 'react';
-import { getSchemaType, getWidget } from '../utils';
-import get from 'lodash/get';
+import { getFieldComponent } from '../utils';
 
 export default function SchemaField(props) {
-  const { schema, uiSchema, formData, registry, onChange } = props;
+  const {
+    name,
+    schema,
+    errorSchema,
+    formData,
+    registry,
+    onChange,
+    disabled,
+  } = props;
 
-  const type = getSchemaType(schema);
+  const FieldComponent = getFieldComponent(schema, registry.fields);
 
-  if (type !== 'object') {
-    const Widget = getWidget(schema, uiSchema, registry.widgets);
+  const field = (
+    <FieldComponent
+      {...props}
+      name={name}
+      formData={formData}
+      onChange={onChange}
+      schema={schema}
+      disabled={disabled}
+      errorSchema={errorSchema}
+    />
+  );
 
-    return (
-      <Widget
-        schema={schema}
-        uiSchema={uiSchema}
-        value={formData}
-        onChange={onChange}
-      />
-    );
-  }
-
-  const properties = Object.keys(schema.properties || {});
-
-  const onPropertyChange = name => {
-    return value => {
-      const newFormData = { ...formData, [name]: value };
-      onChange(newFormData);
-    };
-  };
-
-  // 对象结构，进行schema、Schema、formData、拆解
-  return properties.map(name => {
-    // const  schema={}
-    return (
-      <SchemaField
-        key={name}
-        registry={registry}
-        schema={get(schema, `properties.${name}`)}
-        uiSchema={get(uiSchema, `${name}`)}
-        formData={get(formData, `${name}`)}
-        onChange={onPropertyChange(name)}
-      />
-    );
-  });
+  return field;
 }
