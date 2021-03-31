@@ -5,6 +5,7 @@ export default function ObjectField(props) {
   const {
     name,
     schema,
+    value,
     formData,
     disabled,
     registry = {},
@@ -15,8 +16,9 @@ export default function ObjectField(props) {
   const { fields, templates } = registry;
 
   const onPropertyChange = name => {
-    return value => {
-      const newFormData = { ...formData, [name]: value };
+    return v => {
+      console.log('Name', v, formData, value);
+      const newFormData = { ...value, [name]: v };
       onChange(newFormData);
     };
   };
@@ -36,7 +38,7 @@ export default function ObjectField(props) {
     disabled,
     formData,
     properties: properties.map(name => {
-      // 对象结构，进行schema、Schema、formData、拆解
+      // 对象结构，进行schema、value、拆解
       return {
         name,
         disabled,
@@ -48,7 +50,8 @@ export default function ObjectField(props) {
             disabled={disabled}
             schema={get(schema, `properties.${name}`)}
             errorSchema={get(errorSchema, name)}
-            formData={get(formData, name)}
+            value={get(value, name)}
+            formData={formData}
             onChange={onPropertyChange(name)}
           />
         ),

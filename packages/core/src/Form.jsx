@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { getDefaultRegistry, validate, combineSchema } from './utils';
+import {
+  getDefaultRegistry,
+  validate,
+  resolveSchema,
+  getDefaultFormState,
+  combineSchema,
+} from './utils';
 import useControllableValue from './hooks/useControllableValue';
 import omit from 'lodash/omit';
 
 import './index.less';
 
 export default function Form(props) {
-  console.log('receive props', props);
-
   const [formData, setFormData] = useControllableValue(props, {
     valuePropName: 'formData',
     trigger: 'onChange',
@@ -47,10 +51,14 @@ export default function Form(props) {
     console.log('updateValidation', validate(schema, uiSchema, formData));
   };
 
+  const mixSchema = combineSchema(schema, uiSchema);
+
   // 表单值有变动
   const handleChange = formData => {
     updateValidation();
-    setFormData(formData);
+    // 拿到schema对应的formData
+    const newFormData = getDefaultFormState(mixSchema, formData);
+    setFormData(newFormData);
   };
 
   const Container = container ? container : 'form';
@@ -59,8 +67,7 @@ export default function Form(props) {
     fields: { SchemaField },
   } = registry;
 
-  const _schema = combineSchema(schema, uiSchema);
-  console.log('formData', _schema);
+  const _schema = resolveSchema(mixSchema, formData, formData);
 
   return (
     <Container {...othersProps} {...containerProps}>
@@ -69,6 +76,7 @@ export default function Form(props) {
         registry={registry}
         schema={_schema}
         errorSchema={errorSchema}
+        value={formData}
         formData={formData}
         disabled={disabled}
         onChange={handleChange}

@@ -6,6 +6,7 @@ export default function SchemaField(props) {
     name,
     schema,
     errorSchema,
+    value,
     formData,
     registry,
     onChange,
@@ -18,6 +19,7 @@ export default function SchemaField(props) {
     <FieldComponent
       {...props}
       name={name}
+      value={value}
       formData={formData}
       onChange={onChange}
       schema={schema}

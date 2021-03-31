@@ -1,11 +1,12 @@
 import React from 'react';
-import { getWidget } from '../utils';
-import get from 'lodash/get';
+import { getWidget, getWidgetProps, convertValue } from '../utils';
+import defaultTo from 'lodash/defaultTo';
 
 export default function DefaultField(props) {
   const {
     name,
     schema,
+    value,
     formData,
     disabled,
     registry = {},
@@ -21,6 +22,7 @@ export default function DefaultField(props) {
   const templateProps = {
     label: schema.title === undefined ? name : schema.title,
     description: schema.description,
+    formData,
     errors: errorSchema,
     disabled,
     formData,
@@ -28,17 +30,37 @@ export default function DefaultField(props) {
     registry,
   };
 
-  const options = get(schema, 'ui:options', {});
+  // 去除ui前缀，变成单独prop传递给widtet
+  const {
+    'ui:className': className,
+    'ui:options': options = {},
+    'ui:hidden': hidden,
+    'ui:disabled': _disabled,
+    'ui:readonly': _readOnly,
+  } = schema;
+
+  const widgetProps = {
+    options,
+    className,
+    hidden: hidden,
+    disabled: defaultTo(_disabled, disabled),
+    readonly: defaultTo(_readOnly, false),
+  };
+
+  // 隐藏掉字段
+  if (widgetProps.hidden) {
+    return null;
+  }
 
   return (
     <Template {...templateProps}>
       <Widget
-        disabled={disabled}
         schema={schema}
-        value={formData}
+        value={value}
+        formData={formData}
         errorSchema={errorSchema}
         onChange={onChange}
-        options={options}
+        {...widgetProps}
       />
     </Template>
   );
