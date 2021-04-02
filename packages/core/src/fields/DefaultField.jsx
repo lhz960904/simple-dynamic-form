@@ -41,6 +41,9 @@ export default function DefaultField(props) {
     'ui:disabled': _disabled,
     'ui:readonly': _readOnly,
     required,
+    max,
+    min,
+    step,
     rules = [], // rules可能存在required
   } = schema;
 
@@ -62,6 +65,9 @@ export default function DefaultField(props) {
     options,
     className,
     required,
+    max,
+    min,
+    step,
     hidden: hidden,
     disabled: defaultTo(_disabled, disabled),
     readonly: defaultTo(_readOnly, false),

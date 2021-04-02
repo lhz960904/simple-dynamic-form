@@ -11,7 +11,7 @@ import validate from './samples/validate';
 import 'antd/dist/antd.css';
 import './style.less';
 
-const sampleItems = [validate, basic, widgets, dependecies];
+const sampleItems = [widgets, basic, dependecies, validate];
 
 function stringify(obj) {
   return ['schema', 'uiSchema', 'formData'].reduce((ret, k) => {

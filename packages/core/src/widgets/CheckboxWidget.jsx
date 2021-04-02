@@ -13,7 +13,7 @@ export default function CheckboxWidget({
       {...options}
       type="checkbox"
       disabled={disabled}
-      value={value || ''}
+      checked={Boolean(value)}
       onChange={e => onChange(e.target.checked)}
     />
   );

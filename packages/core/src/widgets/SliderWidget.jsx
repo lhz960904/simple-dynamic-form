@@ -8,8 +8,6 @@ export default function SliderWidget({
   disabled,
   options,
 }) {
-  const type = schema.type || 'text';
-
   const { min, max, step } = schema;
 
   return (
@@ -20,7 +18,7 @@ export default function SliderWidget({
       step={step}
       type="range"
       disabled={disabled}
-      value={value || ''}
+      value={value || 0}
       onChange={e => onChange(toNumber(e.target.value))}
     />
   );

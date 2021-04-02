@@ -4,6 +4,7 @@ import templates from './templates';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
+import toNumber from 'lodash/toNumber';
 import defaultTo from 'lodash/defaultTo';
 import isNil from 'lodash/isNil';
 import Schema from 'async-validator';
@@ -342,4 +343,22 @@ export function validate(schema, formData, messageFormat = {}) {
   validator.messages(messageFormat);
 
   return validator.validate(verifyValues);
+}
+
+// parse value类型，默认是string，可能是boolean、integer、number
+export function parseValue(value, schema = {}) {
+  const nums = new Set(['number', 'integer']);
+  const { type, items } = schema;
+
+  if (value === '') {
+    return undefined;
+  } else if (type === 'array' && items && nums.has(items.type)) {
+    return value.map(toNumber);
+  } else if (type === 'boolean') {
+    return value === 'true';
+  } else if (nums.has(type)) {
+    return toNumber(value);
+  } else {
+    return value;
+  }
 }
