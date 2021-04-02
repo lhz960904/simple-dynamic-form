@@ -17,20 +17,14 @@ export default {
             type: 'string',
             'ui:hidden': '{{!rootValue.showMore}}',
           },
+          enum: {
+            type: 'array',
+            enum: ['a', 'b', 'c '],
+          },
           x2: {
             title: '输入框2',
             type: 'string',
-            'ui:hidden': '{{!rootValue.showMore}}',
-          },
-          obj: {
-            type: 'object',
-            properties: {
-              string: {
-                title: 'stirng',
-                description: '{{ formData.case1.showMore ? `true` : `false` }}',
-                type: 'string',
-              },
-            },
+            'ui:hidden': '{{rootValue.enum !== "a"}}',
           },
         },
       },
@@ -50,8 +44,8 @@ export default {
               "{{rootValue.bi === 'dollar' ? '一次汇款不超过150美元':'一次汇款不超过1000元'}}",
             type: 'string',
             'ui:options': {
-              addonBefore: "{{rootValue.bi === 'rmb'? '￥':'$'}}",
-              addonAfter: "{{rootValue.bi === 'rmb'? '元':'美元'}}",
+              placeholder:
+                "{{rootValue.bi === 'dollar' ? '一次汇款不超过150美元':'一次汇款不超过1000元'}}",
             },
           },
         },

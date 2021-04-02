@@ -10,14 +10,15 @@ export default function ObjectField(props) {
     disabled,
     registry = {},
     onChange,
-    errorSchema,
+    messageFormat,
+    updateValidation,
+    errors,
   } = props;
 
   const { fields, templates } = registry;
 
   const onPropertyChange = name => {
     return v => {
-      console.log('Name', v, formData, value);
       const newFormData = { ...value, [name]: v };
       onChange(newFormData);
     };
@@ -49,9 +50,11 @@ export default function ObjectField(props) {
             registry={registry}
             disabled={disabled}
             schema={get(schema, `properties.${name}`)}
-            errorSchema={get(errorSchema, name)}
+            errors={errors}
             value={get(value, name)}
             formData={formData}
+            messageFormat={messageFormat}
+            updateValidation={updateValidation}
             onChange={onPropertyChange(name)}
           />
         ),

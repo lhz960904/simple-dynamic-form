@@ -6,6 +6,7 @@ import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
 import defaultTo from 'lodash/defaultTo';
 import isNil from 'lodash/isNil';
+import Schema from 'async-validator';
 
 const DEFULAT_TYPE_TO_FIELD = {
   array: 'ArrayField',
@@ -40,10 +41,10 @@ export function getSchemaType(schema = {}) {
 }
 
 /**
- * 合并Schema、uiSchema，俩者逻辑关联性大，简化内部处理
+ * 合并Schema、uiSchema，生成$id, 俩者逻辑关联性大，简化内部处理
  * 理论上，直接舍弃uiSchema也可以
  */
-export function combineSchema(schema = {}, uiSchema = {}) {
+export function combineSchema(schema = {}, uiSchema = {}, parentKey = 'root') {
   const properties = get(schema, 'properties', {});
 
   if (isEmpty(properties)) {
@@ -54,24 +55,24 @@ export function combineSchema(schema = {}, uiSchema = {}) {
     (ret, [key, schema]) => {
       const { type, enum: options, properties: children, items } = schema;
 
-      const isObj = type === 'object' && children;
-      // enum + array 代表的多选框，没有sub
-      const isArr = type === 'array' && items && !options;
+      const $id = `${parentKey}.${key}`;
+      schema.$id = $id;
 
-      const ui = key && uiSchema[key];
-      if (!ui) {
-        return { ...ret, [key]: schema };
-      }
+      const isObj = Boolean(type === 'object' && children);
+      // enum + array 代表的多选框，没有sub
+      const isArr = Boolean(type === 'array' && items && !options);
+
+      const ui = (key && uiSchema[key]) || {};
 
       // 如果是list，递归合并items
       if (isArr) {
-        const newItems = combineSchema(items, ui.items || {});
+        const newItems = combineSchema(items, ui.items || {}, $id);
         return { ...ret, [key]: { ...schema, ...ui, items: newItems } };
       }
 
       // object递归合并整个schema
       if (isObj) {
-        const newSchema = combineSchema(schema, ui);
+        const newSchema = combineSchema(schema, ui, $id);
         return { ...ret, [key]: { ...newSchema } };
       }
 
@@ -178,10 +179,6 @@ export function getFieldComponent(schema, fields) {
   return fields[componentName] || fields.DefaultField;
 }
 
-export function validate(schema, formData) {
-  // const checkt
-}
-
 /**
  * 递归规范化schema，ui:开头属性处理、联动处理
  * @param {*} schema 表单描述
@@ -219,6 +216,10 @@ export function resolveSchema(schema, value, formData, rootValue) {
     'ui:hidden',
     'ui:disabled',
     'ui:readonly',
+    'pattern',
+    'max',
+    'min',
+    'required',
   ];
   const options = schema['ui:options'] || {};
 
@@ -268,4 +269,77 @@ export function getDefaultFormState(schema, formData) {
   const result = createFormData(newSchema, formData);
 
   return result;
+}
+
+/**
+ * 递归遍历schema，并获取对应formData, 交给handler处理
+ */
+export function recursionSchema(schema, formData, handler) {
+  function recursion(_schema, _values, _key) {
+    handler(_schema, _values, _key);
+    if (_schema.properties) {
+      Object.entries(_schema.properties).forEach(([k, s]) => {
+        recursion(s, get(_values, k), k);
+      });
+    }
+  }
+  recursion(schema, formData);
+}
+
+// 生成待效验信息
+function getValidateDescriptor(schema) {
+  const { type, rules, message } = schema;
+  if (rules) {
+    return rules;
+  } else {
+    const someRules = ['pattern', 'max', 'min', 'required'].reduce((ret, k) => {
+      if (!schema[k]) {
+        return ret;
+      }
+      return [...ret, { type, [k]: schema[k], message }];
+    }, []);
+    if (someRules.length) {
+      return someRules;
+    }
+  }
+}
+
+/**
+ * 单独效验一个字段
+ * @param {*} schema
+ * @param {*} formData
+ * @param {*} messageFormat
+ */
+export function validateField(schema, value, messageFormat) {
+  const rules = getValidateDescriptor(_schema);
+  getValidateData();
+  // return [{ message: '哈哈哈 错误' }];
+}
+
+/**
+ * 校验表单
+ * @param {*} schema 表单schema
+ * @param {*} formData 表单最新值
+ */
+export function validate(schema, formData, messageFormat = {}) {
+  const newSchema = resolveSchema(schema, formData, formData);
+
+  const verifyValues = {};
+  const descriptor = {};
+
+  recursionSchema(newSchema, formData, (_schema, _value) => {
+    const rules = getValidateDescriptor(_schema);
+    const { $id } = _schema;
+    if (rules) {
+      descriptor[$id] = rules;
+      verifyValues[$id] = _value;
+    }
+  });
+
+  // console.log('XXXXXXX', descriptor, verifyValues);
+
+  const validator = new Schema(descriptor);
+  validator.messages(messageFormat);
+
+  return validator.validate(verifyValues);
 }

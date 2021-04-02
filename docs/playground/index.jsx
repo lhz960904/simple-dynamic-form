@@ -6,11 +6,12 @@ import { Row, Col, Divider } from 'antd';
 import basic from './samples/basic';
 import widgets from './samples/widgets';
 import dependecies from './samples/dependecies';
+import validate from './samples/validate';
 
 import 'antd/dist/antd.css';
 import './style.less';
 
-const sampleItems = [basic, widgets, dependecies];
+const sampleItems = [validate, basic, widgets, dependecies];
 
 function stringify(obj) {
   return ['schema', 'uiSchema', 'formData'].reduce((ret, k) => {

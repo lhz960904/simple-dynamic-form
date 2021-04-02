@@ -67,6 +67,7 @@ export default function SelectWidget({
       value={multiple ? toArray(value) : value}
       onChange={handleChange}
     >
+      {!multiple && <option value="">请选择</option>}
       {optionList.map(({ label, value }) => (
         <option key={value} value={value}>
           {label}

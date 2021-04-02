@@ -18,7 +18,7 @@ export default function Form(props) {
     trigger: 'onChange',
   });
 
-  const [errorSchema, setErrorShema] = useState({});
+  const [errors, setErrors] = useState({});
 
   const {
     name,
@@ -29,6 +29,9 @@ export default function Form(props) {
     disabled,
     container,
     containerProps,
+    messageFormat,
+    onError,
+    onSubmit,
     ...rest
   } = props;
 
@@ -47,17 +50,22 @@ export default function Form(props) {
   }, [props.fields, props.widgets, props.widgets]);
 
   // 更新表单字段效验信息
-  const updateValidation = () => {
-    console.log('updateValidation', validate(schema, uiSchema, formData));
+  const updateValidation = (id, errs) => {
+    // errors里存在替换，否则添加
+    setErrors(prev => ({
+      ...prev,
+      [id]: errs,
+    }));
   };
 
   const mixSchema = combineSchema(schema, uiSchema);
 
   // 表单值有变动
   const handleChange = formData => {
-    updateValidation();
     // 拿到schema对应的formData
     const newFormData = getDefaultFormState(mixSchema, formData);
+    // 更新校验信息
+    updateValidation(mixSchema, newFormData);
     setFormData(newFormData);
   };
 
@@ -69,16 +77,36 @@ export default function Form(props) {
 
   const _schema = resolveSchema(mixSchema, formData, formData);
 
+  // 提交
+  function handleSubmit(e) {
+    e.preventDefault();
+    validate(_schema, formData, messageFormat)
+      .then(() => {
+        setErrors({});
+        if (typeof onSubmit === 'function') {
+          onSubmit(formData);
+        }
+      })
+      .catch(({ fields }) => {
+        setErrors(fields);
+        if (typeof onError === 'function') {
+          onError(fields, schema, formData);
+        }
+      });
+  }
+
   return (
-    <Container {...othersProps} {...containerProps}>
+    <Container onSubmit={handleSubmit} {...othersProps} {...containerProps}>
       <SchemaField
         name={name}
         registry={registry}
         schema={_schema}
-        errorSchema={errorSchema}
+        errors={errors}
         value={formData}
         formData={formData}
         disabled={disabled}
+        messageFormat={messageFormat}
+        updateValidation={updateValidation}
         onChange={handleChange}
       />
       {children}
@@ -105,8 +133,8 @@ Form.propTypes = {
   disabled: PropTypes.bool,
   // 自定义效验
   validate: PropTypes.func,
-  // 跳过组件自带校验
-  noValidate: PropTypes.bool,
+  // 效验错误文案的format
+  messageFormat: PropTypes.object,
   // 提交回调
   onSubmit: PropTypes.func,
   // 校验失败回调

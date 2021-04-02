@@ -5,11 +5,13 @@ export default function SchemaField(props) {
   const {
     name,
     schema,
-    errorSchema,
+    errors,
     value,
     formData,
     registry,
     onChange,
+    messageFormat,
+    updateValidation,
     disabled,
   } = props;
 
@@ -24,7 +26,9 @@ export default function SchemaField(props) {
       onChange={onChange}
       schema={schema}
       disabled={disabled}
-      errorSchema={errorSchema}
+      messageFormat={messageFormat}
+      updateValidation={updateValidation}
+      errors={errors}
     />
   );
 
